@@ -39,6 +39,7 @@ public class ComparableCircle extends Circle implements Comparable {
     @Override
     public String toString() {
 
+        //you can return the result of comparison here also 
         return String.format("%s", super.toString());
     }
 
