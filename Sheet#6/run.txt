@@ -1,0 +1,95 @@
+**** Welcome to Guess Word game ****
+
+   -> Enter your name: Naif
+   -> Do you want to choose a specific word (Y | N)? N
+    A word is generated: ------
+     -> Guess a letter or enter ? for a hint: a
+        Incorrect Guess :( The word is: ------
+     -> Guess a letter or enter ? for a hint: e
+        Correct Guess :) The word is: ----e-
+     -> Guess a letter or enter ? for a hint: ?
+        The word is: f---e-
+     -> Guess a letter or enter ? for a hint: i
+        Incorrect Guess :( The word is: f---e-
+     -> Guess a letter or enter ? for a hint: ?
+        The word is: fl--e-
+     -> Guess a letter or enter ? for a hint: o
+        Correct Guess :) The word is: flo-e-
+     -> Guess a letter or enter ? for a hint: w
+        Correct Guess :) The word is: flowe-
+     -> Guess a letter or enter ? for a hint: r
+        Correct Guess :) The word is: flower
+
+    You won :)
+
+   -> Do you want to play again (Y | N)? Y
+   -> Do you want to choose a specific word (Y | N)? Y
+     -> Enter the index of the word that you want to choose: 4
+    A word is generated: ---
+     -> Guess a letter or enter ? for a hint: e
+        Incorrect Guess :( The word is: ---
+     -> Guess a letter or enter ? for a hint: a
+        Correct Guess :) The word is: -a-
+     -> Guess a letter or enter ? for a hint: c
+        Correct Guess :) The word is: ca-
+     -> Guess a letter or enter ? for a hint: r
+        Incorrect Guess :( The word is: ca-
+     -> Guess a letter or enter ? for a hint: t
+        Correct Guess :) The word is: cat
+
+    You won :)
+
+   -> Do you want to play again (Y | N)? Y
+   -> Do you want to choose a specific word (Y | N)? N
+    A word is generated: ----------
+     -> Guess a letter or enter ? for a hint: e
+        Correct Guess :) The word is: ----e-----
+     -> Guess a letter or enter ? for a hint: a
+        Incorrect Guess :( The word is: ----e-----
+     -> Guess a letter or enter ? for a hint: ?
+        The word is: u---e-----
+     -> Guess a letter or enter ? for a hint: i
+        Correct Guess :) The word is: u-i-e--i--
+     -> Guess a letter or enter ? for a hint: n
+        Correct Guess :) The word is: uni-e--i--
+     -> Guess a letter or enter ? for a hint: v
+        Correct Guess :) The word is: unive--i--
+     -> Guess a letter or enter ? for a hint: r
+        Correct Guess :) The word is: univer-i--
+     -> Guess a letter or enter ? for a hint: s
+        Correct Guess :) The word is: universi--
+     -> Guess a letter or enter ? for a hint: t
+        Correct Guess :) The word is: universit-
+     -> Guess a letter or enter ? for a hint: y
+        Correct Guess :) The word is: university
+
+    You won :)
+
+   -> Do you want to play again (Y | N)? Y
+   -> Do you want to choose a specific word (Y | N)? Y
+     -> Enter the index of the word that you want to choose: 13
+    A word is generated: ------
+     -> Guess a letter or enter ? for a hint: ?
+        The word is: f-----
+     -> Guess a letter or enter ? for a hint: e
+        Correct Guess :) The word is: f---e-
+     -> Guess a letter or enter ? for a hint: a
+        Incorrect Guess :( The word is: f---e-
+     -> Guess a letter or enter ? for a hint: l
+        Correct Guess :) The word is: fl--e-
+     -> Guess a letter or enter ? for a hint: o
+        Correct Guess :) The word is: flo-e-
+     -> Guess a letter or enter ? for a hint: w
+        Correct Guess :) The word is: flowe-
+     -> Guess a letter or enter ? for a hint: r
+        Correct Guess :) The word is: flower
+
+    You won :)
+
+   -> Do you want to play again (Y | N)? N
+    Your last three score records are: 
+Name: Naif, Word: cat, Score: 4.2857
+Name: Naif, Word: university, Score: 3.9286
+Name: Naif, Word: flower, Score: 3.9286
+
+**** We hope you have enjoyed it, see you ;) ****
