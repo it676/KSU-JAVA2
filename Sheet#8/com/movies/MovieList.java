@@ -60,6 +60,11 @@ public class MovieList {
 
     public void insertAtFront(Movie m) {
 
+
+      if(m == null){
+
+        throw new IllegalArgumentException("Movie can't be null object!");
+      }
         Node newNode = new Node(m);
 
         newNode.setNext(head);
