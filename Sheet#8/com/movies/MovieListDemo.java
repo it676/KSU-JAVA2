@@ -34,7 +34,7 @@ public class MovieListDemo {
         //f
         Movie[] dramaMovies = movieList.searchMovies("Drama");
 
-        if (dramaMovies.length > 0) {
+        if (dramaMovies !=null && dramaMovies.length > 0) {
 
             for (Movie m : dramaMovies) {
 
