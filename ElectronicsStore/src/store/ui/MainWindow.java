@@ -1,12 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package store.ui;
 
 import java.awt.Color;
+import java.io.*;
+import javax.swing.JOptionPane;
+import store.classes.Customer;
 import store.classes.Store;
+import store.classes.TechnicalDevice;
 
 /**
  *
@@ -17,14 +16,17 @@ public class MainWindow extends javax.swing.JFrame {
     /**
      * Creates new form MainWindow
      */
-    Store store = new Store("The Dreams Electronics Store");
+    Store store;
 
     public MainWindow() {
 
         initComponents();//first 
 
+        store = new Store("The Dreams Electronics Store");
+
         customSettings();
 
+        loadStoreData("TechnicalDevices.ser", "Customers.ser");
     }
 
     public final void customSettings() {
@@ -32,6 +34,19 @@ public class MainWindow extends javax.swing.JFrame {
         this.getContentPane().setBackground(Color.WHITE);
 
         this.setLocation(450, 200);
+    }
+
+    private void loadStoreData(String productsFileName, String customerFileName) {
+
+        if (!loadData("DEVICES", productsFileName)) {
+            JOptionPane.showMessageDialog(this, "Error: Can't load productsinfo.\nplease try again.", "Error", JOptionPane.ERROR_MESSAGE);
+
+        }
+        if (!loadData("CUSTOMERS", customerFileName)) {
+
+            JOptionPane.showMessageDialog(this, "Error: Can't load customers info.\nplease try again.", "Error", JOptionPane.ERROR_MESSAGE);
+
+        }
     }
 
     /**
@@ -113,6 +128,73 @@ public class MainWindow extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_registerLoginBtnActionPerformed
+
+    //return Exception if you want what is the reason of the error 
+    public boolean loadData(String type, String fileName) {
+
+        File file = new File(fileName);
+
+        try {
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream(file));
+
+            switch (type.toUpperCase()) {
+
+                case "DEVICES":
+                    while (true) {
+
+                        try {
+
+                            store.devices[store.getNumOfItems()] = (TechnicalDevice) ois.readObject();
+
+                            System.out.println(store.devices[store.getNumOfItems()]);
+                            store.setNumOfItems(1);//update counter of number of items
+
+                        } catch (EOFException ex) {
+
+                            break;
+                        } catch (ClassNotFoundException ex) {
+                            return false;
+                        }
+
+                    }
+                    break;
+
+                case "CUSTOMERS":
+                    while (true) {
+
+                        try {
+
+                            store.customers[store.getNumOfCustomers()] = (Customer) ois.readObject();
+
+                            store.setNumOfCustomers(1);
+
+                        } catch (EOFException ex) {
+
+                            break;
+                        } catch (ClassNotFoundException ex) {
+
+                            return false;
+                        }
+
+                    }
+                    break;
+
+            }
+
+        } catch (IOException ex) {
+
+            return ex instanceof java.io.EOFException;
+        }
+
+        return true;
+
+    }
 
     /**
      * @param args the command line arguments

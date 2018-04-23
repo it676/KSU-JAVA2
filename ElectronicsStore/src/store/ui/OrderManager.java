@@ -7,7 +7,6 @@ package store.ui;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.io.*;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -15,8 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import store.classes.Customer;
+import store.classes.Order;
 import store.classes.Store;
-import store.classes.TechnicalDevice;
 
 /**
  *
@@ -30,6 +29,7 @@ public class OrderManager extends javax.swing.JFrame {
     int[] quantities;
     int itemsCounter = 0;
     boolean isNumberOfITemsEntered = false;
+    boolean isCurrentOrderSaved = false;
 
     /**
      * Creates new form OrderManager
@@ -51,15 +51,18 @@ public class OrderManager extends javax.swing.JFrame {
         this.currentCustomer = customer;
 
         welcomeLbl.setText("Welcome ، " + currentCustomer.getName() + " !");
+
+        loadAllProducts();
+
     }
 
     public OrderManager() {
         initComponents();
 
         customSettings();
-        initCurrentOrderPanel();
 
-        loadAllProducts("All", "");
+        initCurrentOrderPanel();
+        initorderHistoryTextane();
 
     }
 
@@ -78,107 +81,13 @@ public class OrderManager extends javax.swing.JFrame {
 
     }
 
-    //re-use this method many times 
-    public final void loadAllProducts(String filter, String flag) {
-
-        String productsData = loadAllProducts("TechnicalDevices.ser", filter, flag);
-
+    public final void loadAllProducts() {
+        String productsData = currentStore.displayAvaiableItems();
         productsTxtA.setText(productsData);
     }
 
-    //this method will read all the products info from the file and return a String representing the data
-    public final String loadAllProducts(String fileName, String filter, String flag) {
-
-        StringBuilder productsData = new StringBuilder();
-        try {
-
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
-
-            switch (filter.toUpperCase()) {
-                case "ALL":
-
-                    while (true) {
-
-                        try {
-
-                            TechnicalDevice device = (TechnicalDevice) ois.readObject();
-
-                            productsData.append(device.toString()).append("\n");
-                            productsData.append("..............................\n");
-
-                        } catch (EOFException ex) {
-
-                            //normal termination 
-                            break; //stop the loop
-                        }
-                    }//end while
-
-                    break;//end of case #1
-
-                case "BRAND":
-
-                    while (true) {
-
-                        try {
-
-                            TechnicalDevice device = (TechnicalDevice) ois.readObject();
-
-                            if (device.getBrand().equalsIgnoreCase(flag)) {
-                                productsData.append(device.toString()).append("\n");
-                                productsData.append("..............................\n");
-                            }
-
-                        } catch (EOFException ex) {
-
-                            //normal termination 
-                            break; //stop the loop
-                        }
-                    }//end while
-
-                    break;//end of case #2
-
-                case "TYPE":
-
-                    while (true) {
-
-                        try {
-
-                            TechnicalDevice device = (TechnicalDevice) ois.readObject();
-                            //you can use instanceof
-                            flag = flag.equalsIgnoreCase("Desktop") ? "DesktopComputer" : flag;
-
-                            if (device.getClass().getSimpleName().equalsIgnoreCase(flag)) {
-                                productsData.append(device.toString()).append("\n");
-                                productsData.append("..............................\n");
-                            }
-                        } catch (EOFException ex) {
-
-                            //normal termination 
-                            break; //stop the loop
-                        }
-                    }//end while
-                    break;//end of case #3
-
-            }
-
-        } catch (IOException ex) {
-
-            JOptionPane.showMessageDialog(this, "Can't Read Products Data !", "Error", JOptionPane.ERROR_MESSAGE);
-
-        } catch (ClassNotFoundException ex) {
-
-            JOptionPane.showMessageDialog(this, "Class Not Found !\nPlease Contact The Admin\nTo Fix That.", "Error", JOptionPane.ERROR_MESSAGE);
-
-        }
-
-        //return the string and use it in the textArea of the products
-        return productsData.toString().equals("")
-                ? "Sorry , no items to display now , Visit us soon :)"
-                : productsData.toString();
-    }
-
     private void initCurrentOrderPanel() {
-        currentOrderInfoPanel.removeAll();//reset the panel
+        cOrderPanel.removeAll();//reset the panel
         JLabel currentOrderInfo = new JLabel("You don't not have any current order yet.", JLabel.LEFT);
         if (currentCustomer != null) {
 
@@ -189,8 +98,40 @@ public class OrderManager extends javax.swing.JFrame {
             }
         }
 
-        currentOrderInfoPanel.setLayout(new FlowLayout());
-        currentOrderInfoPanel.add(currentOrderInfo);
+        cOrderPanel.setLayout(new FlowLayout());
+        cOrderPanel.add(currentOrderInfo);
+    }
+
+    private void initCurrentOrderConfirmPanel() {
+
+        currentOrderInfoConfirmTxtP.setContentType("text/html");
+        currentOrderInfoConfirmTxtP.setText("You don't not have any current order yet.");
+        if (currentCustomer != null) {
+
+            if (currentCustomer.currentOrder != null) {
+
+                currentOrderInfoConfirmTxtP.setText(currentCustomer.currentOrder.toString());
+
+            }
+        }
+
+    }
+
+    private void initorderHistoryTextane() {
+
+     
+        orderHistory.setText("You don't not have any order yet.");
+        if (currentCustomer != null) {
+
+            if (currentCustomer.numOfOrders > 0) {
+
+                System.out.println(currentCustomer.displayOrderHistory());
+                orderHistory.setText(currentCustomer.displayOrderHistory());
+
+            }
+
+        }
+
     }
 
     /**
@@ -232,20 +173,21 @@ public class OrderManager extends javax.swing.JFrame {
         addBtn = new javax.swing.JButton();
         currentOrderPanel = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        currentOrderInfoPanel = new javax.swing.JPanel();
+        cOrderPanel = new javax.swing.JPanel();
+        currentOrderInfoPanel = new javax.swing.JScrollPane();
         exportOrderPanel = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        saveBtn = new javax.swing.JButton();
         confirmCancelPanel = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        notAvaTxtA1 = new javax.swing.JTextArea();
         confirmBtn = new javax.swing.JButton();
         cancelBtn = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        currentOrderInfoConfirmTxtP = new javax.swing.JTextPane();
         orderHistoryPanel = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        orderHistory = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dreams Electronics Store - Products & Orders");
@@ -385,7 +327,7 @@ public class OrderManager extends javax.swing.JFrame {
 
         jLabel4.setText("Shipping Country:");
 
-        shippingCountryList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Option", "Saudi Arabia", "Bahrain", "Kwait", "United Arab Emirates" }));
+        shippingCountryList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Option", "SA", "BH", "KW", "UAE" }));
 
         jLabel5.setText("-------Add Items------");
 
@@ -492,6 +434,8 @@ public class OrderManager extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
         );
 
+        numOfItemsTxtF.getAccessibleContext().setAccessibleDescription("How many items you'd like to order?");
+
         contentTabbed.addTab("Add Order", new javax.swing.ImageIcon(getClass().getResource("/store/images/icons8-add-shopping-cart-filled-20 (2).png")), addOrderPanel, "Make an Order"); // NOI18N
 
         currentOrderPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -504,15 +448,23 @@ public class OrderManager extends javax.swing.JFrame {
 
         jLabel9.setText("-----Current Order------");
 
-        javax.swing.GroupLayout currentOrderInfoPanelLayout = new javax.swing.GroupLayout(currentOrderInfoPanel);
-        currentOrderInfoPanel.setLayout(currentOrderInfoPanelLayout);
-        currentOrderInfoPanelLayout.setHorizontalGroup(
-            currentOrderInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        currentOrderInfoPanel.setBackground(new java.awt.Color(204, 204, 204));
+
+        javax.swing.GroupLayout cOrderPanelLayout = new javax.swing.GroupLayout(cOrderPanel);
+        cOrderPanel.setLayout(cOrderPanelLayout);
+        cOrderPanelLayout.setHorizontalGroup(
+            cOrderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(cOrderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(currentOrderInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE))
         );
-        currentOrderInfoPanelLayout.setVerticalGroup(
-            currentOrderInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 330, Short.MAX_VALUE)
+        cOrderPanelLayout.setVerticalGroup(
+            cOrderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 291, Short.MAX_VALUE)
+            .addGroup(cOrderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(cOrderPanelLayout.createSequentialGroup()
+                    .addComponent(currentOrderInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout currentOrderPanelLayout = new javax.swing.GroupLayout(currentOrderPanel);
@@ -525,7 +477,7 @@ public class OrderManager extends javax.swing.JFrame {
                 .addGap(152, 152, 152))
             .addGroup(currentOrderPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(currentOrderInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cOrderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         currentOrderPanelLayout.setVerticalGroup(
@@ -534,8 +486,8 @@ public class OrderManager extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addComponent(jLabel9)
                 .addGap(18, 18, 18)
-                .addComponent(currentOrderInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addComponent(cOrderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(55, Short.MAX_VALUE))
         );
 
         contentTabbed.addTab("Current Order", new javax.swing.ImageIcon(getClass().getResource("/store/images/icons8-purchase-order-filled-20.png")), currentOrderPanel, "Your Current Order"); // NOI18N
@@ -545,9 +497,14 @@ public class OrderManager extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         jLabel10.setText("-------[Export Current Order]------");
 
-        jButton1.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/store/images/icons8-approval-20.png"))); // NOI18N
-        jButton1.setText("Save");
+        saveBtn.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+        saveBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/store/images/icons8-approval-20.png"))); // NOI18N
+        saveBtn.setText("Save");
+        saveBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout exportOrderPanelLayout = new javax.swing.GroupLayout(exportOrderPanel);
         exportOrderPanel.setLayout(exportOrderPanelLayout);
@@ -560,7 +517,7 @@ public class OrderManager extends javax.swing.JFrame {
                         .addComponent(jLabel10)
                         .addGap(102, 102, 102))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, exportOrderPanelLayout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(156, 156, 156))))
         );
         exportOrderPanelLayout.setVerticalGroup(
@@ -569,7 +526,7 @@ public class OrderManager extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(jLabel10)
                 .addGap(43, 43, 43)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(284, Short.MAX_VALUE))
         );
 
@@ -580,21 +537,28 @@ public class OrderManager extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         jLabel11.setText("Current Order:");
 
-        notAvaTxtA1.setEditable(false);
-        notAvaTxtA1.setColumns(20);
-        notAvaTxtA1.setLineWrap(true);
-        notAvaTxtA1.setRows(5);
-        notAvaTxtA1.setToolTipText("Sorry , These Items are not Avaialbe");
-        jScrollPane3.setViewportView(notAvaTxtA1);
-
         confirmBtn.setBackground(new java.awt.Color(51, 204, 0));
         confirmBtn.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         confirmBtn.setText("Confirm");
         confirmBtn.setToolTipText("Submit Your Order Now");
+        confirmBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmBtnActionPerformed(evt);
+            }
+        });
 
         cancelBtn.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         cancelBtn.setText("Cancel");
         cancelBtn.setToolTipText("Submit Your Order Now");
+        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtnActionPerformed(evt);
+            }
+        });
+
+        currentOrderInfoConfirmTxtP.setEditable(false);
+        currentOrderInfoConfirmTxtP.setDragEnabled(false);
+        jScrollPane3.setViewportView(currentOrderInfoConfirmTxtP);
 
         javax.swing.GroupLayout confirmCancelPanelLayout = new javax.swing.GroupLayout(confirmCancelPanel);
         confirmCancelPanel.setLayout(confirmCancelPanelLayout);
@@ -603,27 +567,31 @@ public class OrderManager extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, confirmCancelPanelLayout.createSequentialGroup()
                 .addContainerGap(48, Short.MAX_VALUE)
                 .addComponent(jLabel11)
-                .addGap(18, 18, 18)
-                .addGroup(confirmCancelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(confirmCancelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(confirmCancelPanelLayout.createSequentialGroup()
                         .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(75, 75, 75)
                         .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(17, 17, 17))
         );
         confirmCancelPanelLayout.setVerticalGroup(
             confirmCancelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(confirmCancelPanelLayout.createSequentialGroup()
-                .addGap(31, 31, 31)
                 .addGroup(confirmCancelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmCancelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(confirmBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(confirmCancelPanelLayout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(126, 126, 126))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, confirmCancelPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(confirmCancelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(245, Short.MAX_VALUE))
+                .addContainerGap(183, Short.MAX_VALUE))
         );
 
         contentTabbed.addTab("Confirm/Cancel", new javax.swing.ImageIcon(getClass().getResource("/store/images/icons8-approval-20.png")), confirmCancelPanel, "Confirm or Cancel Your Order"); // NOI18N
@@ -633,11 +601,11 @@ public class OrderManager extends javax.swing.JFrame {
         jLabel12.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         jLabel12.setText("-------[ Order History ]------");
 
-        jTextArea2.setEditable(false);
-        jTextArea2.setColumns(20);
-        jTextArea2.setLineWrap(true);
-        jTextArea2.setRows(5);
-        jScrollPane4.setViewportView(jTextArea2);
+        orderHistory.setEditable(false);
+        orderHistory.setColumns(20);
+        orderHistory.setLineWrap(true);
+        orderHistory.setRows(5);
+        jScrollPane6.setViewportView(orderHistory);
 
         javax.swing.GroupLayout orderHistoryPanelLayout = new javax.swing.GroupLayout(orderHistoryPanel);
         orderHistoryPanel.setLayout(orderHistoryPanelLayout);
@@ -649,18 +617,18 @@ public class OrderManager extends javax.swing.JFrame {
                         .addGap(115, 115, 115)
                         .addComponent(jLabel12))
                     .addGroup(orderHistoryPanelLayout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addGap(45, 45, 45)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
         orderHistoryPanelLayout.setVerticalGroup(
             orderHistoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(orderHistoryPanelLayout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addGap(31, 31, 31)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         contentTabbed.addTab("Order History", new javax.swing.ImageIcon(getClass().getResource("/store/images/icons8-order-history-filled-20 (1).png")), orderHistoryPanel, "All Orders You Made"); // NOI18N
@@ -672,16 +640,19 @@ public class OrderManager extends javax.swing.JFrame {
 
     private void brandRBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_brandRBActionPerformed
 
-        String flag = filterList.getSelectedItem().toString();//get the  selected value in the comboxbox
+        String brand = filterList.getSelectedItem().toString();//get the  selected value in the comboxbox
 
-        loadAllProducts("BRAND", flag);
+        String itemsByBrand = currentStore.displaybyBrand(brand);
+        productsTxtA.setText(itemsByBrand);
+
 
     }//GEN-LAST:event_brandRBActionPerformed
 
     private void allRBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allRBActionPerformed
 
         filterList.setEnabled(false);
-        loadAllProducts("ALL", "");
+        String aviItems = currentStore.displayAvaiableItems();
+        productsTxtA.setText(aviItems);
 
     }//GEN-LAST:event_allRBActionPerformed
 
@@ -692,9 +663,10 @@ public class OrderManager extends javax.swing.JFrame {
         filterList.setModel(model);
         filterList.setEnabled(true);
 
-        String flag = filterList.getSelectedItem().toString();//get the  selected value in the comboxbox
+        String itemsByType = currentStore.displaybyType(filterList.getSelectedIndex());
+        productsTxtA.setText(itemsByType);
 
-        loadAllProducts("TYPE", flag);
+
     }//GEN-LAST:event_typeRBActionPerformed
 
     private void brandRBStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_brandRBStateChanged
@@ -712,11 +684,11 @@ public class OrderManager extends javax.swing.JFrame {
     }//GEN-LAST:event_filterListActionPerformed
 
     private void viewBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBtnActionPerformed
-
+        String items = "Sorry , No products to display !";
         String flag = "";
         if (allRB.isSelected()) {
 
-            loadAllProducts("ALL", flag);
+            items = currentStore.displayAvaiableItems();
 
         } else {
 
@@ -724,14 +696,15 @@ public class OrderManager extends javax.swing.JFrame {
 
             if (brandRB.isSelected()) {
 
-                loadAllProducts("BRAND", flag);
+                items = currentStore.displaybyBrand(flag);
 
             } else if (typeRB.isSelected()) {
 
-                loadAllProducts("TYPE", flag);
+                items = currentStore.displaybyType(filterList.getSelectedIndex());
 
             }
         }
+        productsTxtA.setText(items);
 
     }//GEN-LAST:event_viewBtnActionPerformed
 
@@ -868,6 +841,7 @@ public class OrderManager extends javax.swing.JFrame {
         itemsIDs = null;
         quantities = null;
         numOfItemsTxtF.setText("");
+        isCurrentOrderSaved = false;
     }//GEN-LAST:event_submitOrderBtnActionPerformed
 
     private void currentOrderPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_currentOrderPanelMouseClicked
@@ -883,9 +857,115 @@ public class OrderManager extends javax.swing.JFrame {
 
         if (contentTabbed.getSelectedIndex() == 2) {
             initCurrentOrderPanel();
+        } else if (contentTabbed.getSelectedIndex() == 4) {
+            initCurrentOrderConfirmPanel();
+        } else if (contentTabbed.getSelectedIndex() == 5) {
+            initorderHistoryTextane();
         }
 
+
     }//GEN-LAST:event_contentTabbedStateChanged
+
+    private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+
+        if (!isCurrentOrderSaved) {
+
+            saveCurrentOrder(currentCustomer.currentOrder, "currentOrder.txt");
+            isCurrentOrderSaved = true;
+        } else {
+
+            JOptionPane.showMessageDialog(this, "Your current order alredy saved\nMake new order and then try again.", "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+
+
+    }//GEN-LAST:event_saveBtnActionPerformed
+
+    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
+
+        if (currentCustomer.currentOrder != null) {
+
+            int answer = JOptionPane.showConfirmDialog(this, "Are you sure you want to confirm your order now ?", "Confirm",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (answer == JOptionPane.YES_OPTION) {
+
+                if (currentStore.confirmOrder(currentCustomer.getID())) {
+
+                    //save the order
+                    currentCustomer.saveCurrentOrdrer();
+                    JOptionPane.showMessageDialog(this, "Your order has been confirmed successfully !", "Order",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    //reset 
+                    currentCustomer.currentOrder = null;
+                } else {
+
+                    JOptionPane.showMessageDialog(this, "Sorry , Your order has not been confirmed !", "Order",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "You don't have any current order yet to confirm.\nPlease make one and then try again.", "Order",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+
+    }//GEN-LAST:event_confirmBtnActionPerformed
+
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+
+        if (currentCustomer.currentOrder != null) {
+
+            int answer = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel your order now ?", "Confirm",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (answer == JOptionPane.YES_OPTION) {
+
+                if (currentStore.cancelOrder(currentCustomer.getID())) {
+
+                    JOptionPane.showMessageDialog(this, "Your order has been cancelled successfully !", "Order",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+
+                    JOptionPane.showMessageDialog(this, "Sorry , Your order has not been cancelled\nSomething wrong happend\nPlease try again later !", "Order",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "You don't have any current order yet to cancel.\nPlease make one and then try again.", "Order",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_cancelBtnActionPerformed
+
+    private void saveCurrentOrder(Order currentOrder, String fileName) {
+
+        if (currentOrder != null) {
+
+            int answer = JOptionPane.showConfirmDialog(this, "Are you sure you want to save the current order info now?", "Confirm",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (answer == JOptionPane.YES_OPTION) { //or == 0 
+
+                if (currentCustomer.saveCurrentOrdrer()) {
+                    JOptionPane.showMessageDialog(this, "Your order has been saved successfully !", "Order",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                } else {
+
+                    JOptionPane.showMessageDialog(this, "Sorry , Your order has not been cancelled\nSomething wrong happend\nPlease try again later !", "Order",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+
+            JOptionPane.showMessageDialog(this, " You don't have any current order for now.\nPlease make one and then try again. ", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
 
     public boolean addItem(String id, int q) {
 
@@ -1022,17 +1102,18 @@ public class OrderManager extends javax.swing.JFrame {
     private javax.swing.JPanel addOrderPanel;
     private javax.swing.JRadioButton allRB;
     private javax.swing.JRadioButton brandRB;
+    private javax.swing.JPanel cOrderPanel;
     private javax.swing.JButton cancelBtn;
     private javax.swing.JButton confirmBtn;
     private javax.swing.JPanel confirmCancelPanel;
     private javax.swing.JTabbedPane contentTabbed;
-    private javax.swing.JPanel currentOrderInfoPanel;
+    private javax.swing.JTextPane currentOrderInfoConfirmTxtP;
+    private javax.swing.JScrollPane currentOrderInfoPanel;
     private javax.swing.JPanel currentOrderPanel;
     private javax.swing.JPanel exportOrderPanel;
     private javax.swing.JComboBox filterList;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JTextField itemIdTxtF;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1048,14 +1129,15 @@ public class OrderManager extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTextArea notAvaTxtA;
-    private javax.swing.JTextArea notAvaTxtA1;
     private javax.swing.JTextField numOfItemsTxtF;
+    private javax.swing.JTextArea orderHistory;
     private javax.swing.JPanel orderHistoryPanel;
     private javax.swing.JTextArea productsTxtA;
     private javax.swing.JTextField quantityTxtF;
+    private javax.swing.JButton saveBtn;
     private javax.swing.JComboBox shippingCountryList;
     private javax.swing.JButton submitOrderBtn;
     private javax.swing.JRadioButton typeRB;

@@ -24,19 +24,20 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
      * Creates new form LoginRegisterWindow
      */
     Store currentStore;
-
+    
     public LoginRegisterWindow(Store store) {
-
+        
         this();
+       
         this.currentStore = store;
-
+      
     }
-
+    
     public LoginRegisterWindow() {
         initComponents();
-
+        
         customSettings();
-
+        
         ButtonGroup group = new ButtonGroup();
         group.add(loginRB);
         group.add(registerRB);
@@ -46,9 +47,9 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
 
         //ok now when we click on a btn we need to activate it 
     }
-
+    
     public static void setPanelEnable(JPanel panel, boolean isEnable) {
-
+        
         panel.setEnabled(isEnable);//yes or no
 
         //not we need to disable or enable all its comonents
@@ -56,16 +57,16 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
 
         //loop on all components  and disable/enable them
         for (Component comp : components) {
-
+            
             comp.setEnabled(isEnable);
         }
-
+        
     }
-
+    
     public final void customSettings() {
-
+        
         this.getContentPane().setBackground(Color.WHITE);
-
+        
         this.setLocation(450, 200);
     }
 
@@ -101,7 +102,6 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dreams Electronics Store-Login/Register");
-        setPreferredSize(new java.awt.Dimension(750, 410));
         setResizable(false);
         setSize(new java.awt.Dimension(750, 380));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -141,9 +141,9 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
         passwordTxtFRegister.setForeground(new java.awt.Color(3, 169, 244));
         registerPanel.add(passwordTxtFRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, 160, -1));
 
-        registerBtn.setBackground(new java.awt.Color(3, 169, 244));
+        registerBtn.setBackground(new java.awt.Color(255, 255, 255));
         registerBtn.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
-        registerBtn.setForeground(new java.awt.Color(255, 255, 255));
+        registerBtn.setForeground(new java.awt.Color(3, 169, 244));
         registerBtn.setText("Register");
         registerPanel.add(registerBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 130, -1, -1));
 
@@ -177,9 +177,9 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
         passwordTxtF.setForeground(new java.awt.Color(3, 169, 244));
         loginPanel.add(passwordTxtF, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, 150, -1));
 
-        loginBtn.setBackground(new java.awt.Color(3, 169, 244));
+        loginBtn.setBackground(new java.awt.Color(255, 255, 255));
         loginBtn.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
-        loginBtn.setForeground(new java.awt.Color(255, 255, 255));
+        loginBtn.setForeground(new java.awt.Color(3, 169, 244));
         loginBtn.setText("Login");
         loginBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -238,7 +238,7 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
 
         //disable register panel
         setPanelEnable(registerPanel, false);
-
+        
 
     }//GEN-LAST:event_loginRBActionPerformed
 
@@ -257,7 +257,7 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
         //validate the input 
         if (isEmpty(userNameTxtF) || isEmpty(passwordTxtF)) {
             JOptionPane.showMessageDialog(this, "All fields are reuqired.", "Error", JOptionPane.ERROR_MESSAGE);
-
+            
             return;
         }
 
@@ -266,38 +266,44 @@ public class LoginRegisterWindow extends javax.swing.JFrame {
         String userName = userNameTxtF.getText();
         char[] pass = passwordTxtF.getPassword();
         String password = new String(pass);
-
+        
         boolean isValid = currentStore.login(userName, password);
-
+        
         if (isValid) {
 
             //retrive the customer who logged in 
             Customer[] customers = currentStore.getUsers();
-
+            
             Customer loggedInCustomer = null;
-
+            
             for (Customer cus : customers) {
                 if (cus != null) {
-
+                    
                     if (cus.getID().equals(userName)) {
                         loggedInCustomer = cus;
                     }
                 }
-
+                
             }
-            //open the Frame and send the object of the logged in customer 
-            new OrderManager(currentStore,loggedInCustomer).setVisible(true);
+            
+                
 
+            //open the Frame and send the object of the logged in customer 
+            new OrderManager(currentStore, loggedInCustomer).setVisible(true);
+          
+            
+            
+            
             this.dispose();
         } else {
-
+            
             JOptionPane.showMessageDialog(this, "Invalid Login Information , Try again.", "Login Failed", JOptionPane.WARNING_MESSAGE);
-
+            
         }
     }//GEN-LAST:event_loginBtnActionPerformed
-
+    
     private boolean isEmpty(JTextField txtf) {
-
+        
         return txtf.getText().equals("");
     }
 

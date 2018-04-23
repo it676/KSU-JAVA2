@@ -1,15 +1,13 @@
 package store.classes;
 
-
-
-
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author IT676
  */
-public class Order {
+public class Order implements Serializable {
 
     private String orderID;
     private Date orderDate;
@@ -37,12 +35,10 @@ public class Order {
             return false;
         }
 
-        
         itemsList[numOfitems++] = t;
         return true;
     }
 
-    
     public boolean removeItemOrder(String id) {
 
         for (int i = 0; i < numOfitems; i++) {
@@ -149,16 +145,27 @@ public class Order {
             return null;
         }
 
+        setTotalPrice();//to calculate the total price and set it to the variable total price
+
         StringBuilder orderData = new StringBuilder(); //better than String object for performance reasons
         orderData.append("<html>");
-        orderData.append("Order ID : ").append(orderID).append("<br>");
-        orderData.append("Order Date : ").append(orderDate).append("<br>");
+        orderData.append("Order ID: ").append(this.orderID).append("<br>");
+        orderData.append("Date: ").append(this.orderDate).append("<br>");
+        orderData.append("Shipping Country: ").append(this.Country).append("<br>");
+        orderData.append("Shipping Cost: ").append(this.calculateShipping()).append("<br>");
+        orderData.append("Total Price: ").append(this.totalPrice).append("<br>");
+        orderData.append("Order status: ").append(this.IsCompleted() ? "Confirmed" : "Not Confirmed").append("<br>");
         //...
         //...
 
+        orderData.append("Number of items: ").append(this.numOfitems).append("<br>");
+
         //append ordered items
+        int counter = 1;
         for (ItemOrder item : getitems()) {
-            orderData.append(item.toString()).append("<br>");
+            orderData.append("item[").append(counter++).append("]-->")
+                    .append(item.toString())
+                    .append("<br>");
         }
 
         orderData.append("</html>");

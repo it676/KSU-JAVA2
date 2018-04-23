@@ -1,6 +1,5 @@
 package store.classes;
 
-
 /**
  *
  * @author IT676
@@ -12,7 +11,7 @@ public class Tablet extends TechnicalDevice {
 
     public Tablet(String ID, double size, String pType,
             int ram, String color, String b, double p,
-            int q, boolean c, int sim, String net) {
+            int q, int sim, String net) {
 
         super(ID, size, pType, ram, color, b, p, q);
         noOfSim = sim;

@@ -75,9 +75,10 @@ public abstract class TechnicalDevice implements Item, Serializable {
                 + "  processorType: %s \n"
                 + "  RAM: %d \n"
                 + "  color: %s \n"
-                + "  brand: %s \n",
+                + "  brand: %s \n"
+                + "  Quantity: %s \n",
                 this.getClass().getSimpleName(), itemID, price, displaySize,
-                processorType, RAM, color, brand);
+                processorType, RAM, color, brand, quantity);
     }
 
 }

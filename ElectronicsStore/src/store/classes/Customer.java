@@ -1,13 +1,15 @@
 package store.classes;
 
+import java.io.*;
+
 /**
  *
  * @author IT676
  */
-public class Customer {
+public class Customer implements Serializable {
 
-    private   String name;
-    private   String ID;
+    private String name;
+    private String ID;
     private String password;
     public int numOfOrders = 0;
 
@@ -34,18 +36,72 @@ public class Customer {
         return password;
     }
 
-       //not copmleted yet
-    public void displayCurrentOrder() {
+    //not copmleted yet
+    public String displayCurrentOrder() {
 
-       
+        return this.currentOrder.toString();
     }
 
-    //not copmleted yet
-    public void displayOrderHistory() {
+    public boolean saveCurrentOrdrer() {
+
+        PrintWriter writer = null;
+        try {
+
+            File file = new File("currentOrder.txt");
+
+            if (!file.exists()) {
+
+                file.createNewFile();
+            }
+
+            writer = new PrintWriter(new FileOutputStream(file));
+
+            String data = currentOrder.toString().replace("<html>", "");
+            data = data.replace("<br>", "\n");
+            data = data.replace("</html>", "");
+            writer.println(data);
+
+            return true;//process completed !
+
+        } catch (FileNotFoundException ex) {
+
+            return false;
+        } catch (IOException ex) {
+
+            return false;
+
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+    }
+
+    public String displayOrderHistory() {
+
+        String data = "";
+
         if (numOfOrders == 0) {
-            System.out.println("You did not made any order yeat");
+            return "You did not made any order yeat";
+        }
+        for (int i = 0; i < numOfOrders; i++) {
+
+            Order order = orders[i];
+            if (order != null) {
+
+                if (order.IsCompleted()) {
+                    data += order.toString();
+                    data += "\n---------------------------------\n";
+
+                }
+            }
+
         }
 
-        
+        data = data.replace("<html>", "");
+        data = data.replace("<br>", "\n");
+        data = data.replace("</html>", "");
+        return data;
+
     }
 }

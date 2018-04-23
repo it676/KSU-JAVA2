@@ -1,24 +1,20 @@
 package store.classes;
 
-
-
 /**
  *
  * @author IT676
  */
 public class DesktopComputer extends TechnicalDevice {
 
-    private   String opticalDrive;
+    private String opticalDrive;
 
-    public DesktopComputer(String ID, double size, String pType,int ram, String color, String b,double p, int q, String opticalD) {
+    public DesktopComputer(String ID, double size, String pType, int ram, String color, String b, double p, int q, String opticalD) {
 
-     
         super(ID, size, pType, ram, color, b, p, q);
-         
+
         opticalDrive = opticalD;
     }
 
-   
     @Override
     public double getPrice() {
 
@@ -42,9 +38,6 @@ public class DesktopComputer extends TechnicalDevice {
         return price;
 
     }
-
-    
-            
 
     @Override
     public String toString() {

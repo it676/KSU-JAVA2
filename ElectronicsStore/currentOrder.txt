@@ -1,0 +1,9 @@
+Order ID: order2
+Date: Mon Apr 23 12:34:34 AST 2018
+Shipping Country: KW
+Shipping Cost: 0.0
+Total Price: 18810.0
+Order status: Confirmed
+Number of items: 1
+item[1]-->Item ID: d5 Price:6270.00 Quantity: 1
+
