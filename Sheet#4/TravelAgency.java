@@ -31,20 +31,12 @@ public class TravelAgency {
             if (t instanceof BusTicket) {
                 double distance = ((BusTicket) t).getDistance();
                 Issues[numOfTickets++] = new BusTicket(name, dep, des, date, ticketClass, distance);
-            } else if (t instanceof AirlineTicket) {
+            } else {
                 String companyName = ((AirlineTicket) t).getCompanyName();
                 Issues[numOfTickets++] = new AirlineTicket(name, dep, des, date, ticketClass, companyName);
 
-            } else {
-                System.out.println("Unknow Ticket Type !");
-                return false;
-            }
-            
-            
-            //call the method to calculate and  set the Total Price for the added ticket
-            int lastAddedTicketIndex = numOfTickets - 1;
-            Issues[lastAddedTicketIndex].setTotalPrice();
-            
+            } 
+      
             return true;
         }//end else
     }//end method addReservation
