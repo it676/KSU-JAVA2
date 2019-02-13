@@ -51,7 +51,7 @@ public class TravelAgency {
 
     public boolean cancelReservation(int index) {
 
-        if (index < 0 || index >= Issues.length) {
+        if (index < 0 || numOfTickets) {
             return false;
         }
 
